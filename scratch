@@ -1,0 +1,9 @@
+
+controlServer.onConnectionMade:
+    mudClient.startConnection
+
+mudClient.dataReceived(data):
+    controlServer.writeData(data)
+
+controlServer.dataReceived(data):
+    mudClient.writeData(data)
