@@ -6,17 +6,17 @@ from event import ControlConnectionReceived, ControlConnectionLost, ControlDataR
 class ControlServer(Protocol):
     def connectionMade(self):
         print "Control connection received. Starting client connection..."
-        self.factory.onConnectionMade(self.transport)
+        self.factory._connectionMade(self.transport)
 
     def connectionLost(self, reason):
         print "Control connection died. Dying along..."
-        self.factory.onConnectionLost()
+        self.factory._connectionLost()
 
     def dataReceived(self, data):
         print "Got some data: %s" % data
-        self.factory.onDataReceived(data)
+        self.factory._dataReceived(data)
 
-class ControlServerFactory(Factory):
+class ControlServerFactory(Factory, Subscriber):
     def __init__(self):
         self.mainConnection = None
 
@@ -35,21 +35,20 @@ class ControlServerFactory(Factory):
             # Another connection, just drop it
             return None
 
-    def onConnectionMade(self, connectionInput):
+    def _connectionMade(self, connectionInput):
         ev = ControlConnectionReceived(connectionInput)
         
         EventBus.instance.publish(ev)
 
-    def onConnectionLost(self):
+    def _connectionLost(self):
         ev = ControlConnectionLost()
 
         EventBus.instance.publish(ev)
 
-    def onDataReceived(self, data):
+    def _dataReceived(self, data):
         ev = ControlDataReceived(data)
 
         EventBus.instance.publish(ev)
 
-    def handle(self, event):
-        if isinstance(event, MUDDataReceived):
-            self.mainConnection.transport.write(event.data)
+    def onMUDDataReceived(self, event):
+        self.mainConnection.transport.write(event.data)
