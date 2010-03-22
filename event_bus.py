@@ -9,7 +9,7 @@ class EventBus(object):
 
         def publish(self, event):
             for subscriber in self.subscribers:
-                subscriber.publish(event)
+                subscriber.handle(event)
 
     instance = _EventBusImpl()
 

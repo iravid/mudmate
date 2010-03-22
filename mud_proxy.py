@@ -15,7 +15,7 @@ class MUDProxy(object):
         
         reactor.listenTCP(10023, self.controlServerFactory)
 
-    def publish(self, event):
+    def handle(self, event):
         if isinstance(event, ControlConnectionReceived):
             reactor.connectTCP(MUD_HOSTNAME, MUD_PORT, self.mudClientFactory)
 

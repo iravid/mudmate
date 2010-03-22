@@ -29,6 +29,6 @@ class MUDClientFactory(ClientFactory):
 
         EventBus.instance.publish(ev)
 
-    def publish(self, event):
+    def handle(self, event):
         if isinstance(event, ControlDataReceived):
             self.mainConnection.transport.write(event.data)

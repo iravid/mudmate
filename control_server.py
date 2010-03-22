@@ -50,6 +50,6 @@ class ControlServerFactory(Factory):
 
         EventBus.instance.publish(ev)
 
-    def publish(self, event):
+    def handle(self, event):
         if isinstance(event, MUDDataReceived):
             self.mainConnection.transport.write(event.data)
