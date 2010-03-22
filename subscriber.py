@@ -6,4 +6,4 @@ class Subscriber(object):
         event_handler = getattr(self, event_handler_name, None)
 
         if event_handler:
-            event_handler(self, event)
+            event_handler(event)
