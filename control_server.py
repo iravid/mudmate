@@ -6,15 +6,12 @@ from subscriber import Subscriber
 
 class ControlServer(Protocol):
     def connectionMade(self):
-        print "Control connection received. Starting client connection..."
         self.factory._connectionMade(self.transport)
 
     def connectionLost(self, reason):
-        print "Control connection died. Dying along..."
         self.factory._connectionLost()
 
     def dataReceived(self, data):
-        print "Got some data: %s" % data
         self.factory._dataReceived(data)
 
 class ControlServerFactory(Factory, Subscriber):
