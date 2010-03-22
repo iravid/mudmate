@@ -2,12 +2,13 @@ from twisted.internet.protocol import Protocol, ClientFactory
 
 from event_bus import EventBus
 from event import MUDDataReceived, ControlDataReceived
+from subscriber import Subscriber
 
 class MUDClient(Protocol):
     def dataReceived(self, data):
-        self.factory.onDataReceived(data)
+        self.factory._dataReceived(data)
 
-class MUDClientFactory(ClientFactory):
+class MUDClientFactory(ClientFactory, Subscriber):
     def __init__(self):
         self.mainConnection = None
 
@@ -24,11 +25,10 @@ class MUDClientFactory(ClientFactory):
         else:
             return None
 
-    def onDataReceived(self, data):
+    def _dataReceived(self, data):
         ev = MUDDataReceived(data)
 
         EventBus.instance.publish(ev)
 
-    def handle(self, event):
-        if isinstance(event, ControlDataReceived):
-            self.mainConnection.transport.write(event.data)
+    def onControlDataReceived(self, event):
+        self.mainConnection.transport.write(event.data)

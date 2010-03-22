@@ -2,6 +2,7 @@ from twisted.internet.protocol import Protocol, Factory
 
 from event_bus import EventBus
 from event import ControlConnectionReceived, ControlConnectionLost, ControlDataReceived, MUDDataReceived
+from subscriber import Subscriber
 
 class ControlServer(Protocol):
     def connectionMade(self):
