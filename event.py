@@ -1,14 +1,18 @@
-class ControlConnectionReceived(object):
-    def __init__(self, connectionInput):
-        self.connectionInput = connectionInput
+class Event(object):
+    def __init__(self, data):
+        self.data = data
 
-class ControlConnectionLost(object):
+class ControlConnectionReceived(Event):
     pass
 
-class ControlDataReceived(object):
-    def __init__(self, data):
-        self.data = data
+class ControlConnectionLost(Event):
+    pass
 
-class MUDDataReceived(object):
-    def __init__(self, data):
-        self.data = data
+class ControlDataReceived(Event):
+    pass
+
+class MUDDataReceived(Event):
+    pass
+
+class TriggerDataGenerated(Event):
+    pass
