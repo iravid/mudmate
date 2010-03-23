@@ -12,6 +12,8 @@ class RegexProcessor(Subscriber):
         for pattern, handlerName in self.rules.items():
             self.rules[pattern] = getattr(self, "on%s" % handlerName)
 
+        EventBus.instance.subscribe(self)
+
     def onMUDDataReceived(self, event):
         responses = self.matchData(event.data)
 
