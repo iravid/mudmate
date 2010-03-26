@@ -1,4 +1,4 @@
-class Event(object):
+class MyCoolEvent(object):
     def __init__(self, data=None):
         self.data = data
 
