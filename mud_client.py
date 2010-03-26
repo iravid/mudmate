@@ -4,7 +4,7 @@ from event_bus import EventBus
 from event import MUDDataReceived, ControlDataReceived
 from subscriber import Subscriber
 
-class MUDClient(Protocol):
+class MUDClient(Bla):
     def dataReceived(self, data):
         self.factory._dataReceived(data)
 
