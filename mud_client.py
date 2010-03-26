@@ -1,11 +1,10 @@
 from twisted.internet.protocol import Protocol, ClientFactory
-from twisted.conch.telnet import StatefulTelnetProtocol
 
 from event_bus import EventBus
 from event import MUDDataReceived, ControlDataReceived
 from subscriber import Subscriber
 
-class MUDClient(StatefulTelnetProtocol):
+class MUDClient(Protocol):
     def dataReceived(self, data):
         self.factory._dataReceived(data)
 
@@ -33,9 +32,3 @@ class MUDClientFactory(ClientFactory, Subscriber):
 
     def onControlDataReceived(self, event):
         self.mainConnection.transport.write(event.data)
-
-    def onTriggerDataGenerated(self, event):
-        responses = event.data
-
-        for response in responses:
-            self.mainConnection.transport.write(response)
