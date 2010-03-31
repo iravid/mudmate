@@ -1,7 +1,7 @@
 from twisted.internet.protocol import Protocol, ClientFactory
 
 from event_bus import EventBus
-from event import MUDDataReceived, ControlDataReceived
+from event import Event
 from subscriber import Subscriber
 
 class MUDClient(Protocol):
@@ -26,8 +26,7 @@ class MUDClientFactory(ClientFactory, Subscriber):
             return None
 
     def _dataReceived(self, data):
-        ev = MUDDataReceived(data)
-
+        ev = Event("MUDDataReceived", data)
         EventBus.instance.publish(ev)
 
     def onControlDataReceived(self, event):
