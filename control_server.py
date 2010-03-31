@@ -42,7 +42,7 @@ class ControlServerFactory(Factory, Subscriber):
         EventBus.instance.publish(ev)
 
     def _dataReceived(self, data):
-        ev = Event("ControlDataReceived")
+        ev = Event("ControlDataReceived", data)
         EventBus.instance.publish(ev)
 
     def onMUDDataReceived(self, event):
