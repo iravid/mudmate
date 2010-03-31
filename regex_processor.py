@@ -1,3 +1,4 @@
+import logging
 import re
 
 from subscriber import Subscriber
@@ -6,10 +7,12 @@ from event_bus import EventBus
 
 class RegexProcessor(Subscriber):
     rules = {
-        "Enter an option or your character\'s name\.": "Username"
+        r"Enter an option or your character\'s name\.": "Username"
     }
 
     def __init__(self):
+        self.logger = logging.getLogger("mud_proxy.RegexProcessor")
+
         for pattern, handlerName in self.rules.items():
             self.rules[pattern] = getattr(self, "on%s" % handlerName)
 
@@ -26,7 +29,8 @@ class RegexProcessor(Subscriber):
         responses = []
 
         for pattern, handler in self.rules.items():
-            match = re.match(pattern, data)
+            self.logger.debug("Trying to match %s against %s" % (data, pattern))
+            match = re.search(pattern, data, re.MULTILINE)
 
             if match:
                 response = handler(match)
@@ -37,6 +41,6 @@ class RegexProcessor(Subscriber):
         return responses
 
     def onUsername(self, match):
-        print "Matched! Sending Riaan"
+        self.logger.debug("Matched! Sending Riaan")
 
-        return "Riaan\n"
+        return "Riaan\r\n"
