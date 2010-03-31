@@ -3,7 +3,6 @@ from twisted.internet import reactor
 from control_server import ControlServerFactory
 from mud_client import MUDClientFactory
 from event_bus import EventBus
-from event import ControlConnectionReceived, ControlConnectionLost
 from subscriber import Subscriber
 from regex_processor import RegexProcessor
 from config import MUD_HOSTNAME, MUD_PORT
