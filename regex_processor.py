@@ -1,7 +1,7 @@
 import re
 
 from subscriber import Subscriber
-from event import TriggerDataGenerated
+from event import Event
 from event_bus import EventBus
 
 class RegexProcessor(Subscriber):
@@ -18,8 +18,7 @@ class RegexProcessor(Subscriber):
     def onMUDDataReceived(self, event):
         responses = self.matchData(event.data)
 
-        event = TriggerDataGenerated()
-        event.data = responses
+        event = Event("TriggerDataGenerated", responses)
 
         EventBus.instance.publish(event)
 
