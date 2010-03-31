@@ -1,7 +1,7 @@
 from twisted.internet.protocol import Protocol, Factory
 
 from event_bus import EventBus
-from event import ControlConnectionReceived, ControlConnectionLost, ControlDataReceived, MUDDataReceived
+from event import Event
 from subscriber import Subscriber
 
 class ControlServer(Protocol):
@@ -34,18 +34,15 @@ class ControlServerFactory(Factory, Subscriber):
             return None
 
     def _connectionMade(self, connectionInput):
-        ev = ControlConnectionReceived(connectionInput)
-        
+        ev = Event("ControlConnectionReceived", connectionInput)
         EventBus.instance.publish(ev)
 
     def _connectionLost(self):
-        ev = ControlConnectionLost()
-
+        ev = Event("ControlConnectionLost")
         EventBus.instance.publish(ev)
 
     def _dataReceived(self, data):
-        ev = ControlDataReceived(data)
-
+        ev = Event("ControlConnectionLost")
         EventBus.instance.publish(ev)
 
     def onMUDDataReceived(self, event):
