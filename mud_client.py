@@ -26,7 +26,7 @@ class MUDClientFactory(ClientFactory, Subscriber):
             return None
 
     def _dataReceived(self, data):
-        ev = Event("MUDDataReceived", data)
+        ev = Event("RawMUDDataReceived", data)
         EventBus.instance.publish(ev)
 
     def onControlDataReceived(self, event):
