@@ -45,5 +45,5 @@ class ControlServerFactory(Factory, Subscriber):
         ev = Event("ControlDataReceived", data)
         EventBus.instance.publish(ev)
 
-    def onMUDDataReceived(self, event):
+    def onRawMUDDataReceived(self, event):
         self.mainConnection.transport.write(event.data)
