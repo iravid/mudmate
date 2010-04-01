@@ -31,3 +31,7 @@ class MUDClientFactory(ClientFactory, Subscriber):
 
     def onControlDataReceived(self, event):
         self.mainConnection.transport.write(event.data)
+
+    def onTriggerDataGenerated(self, event):
+        for line in event.data:
+            self.mainConnection.transport.write(line)
