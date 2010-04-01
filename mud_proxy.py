@@ -8,6 +8,7 @@ from mud_client import MUDClientFactory
 from event_bus import EventBus
 from subscriber import Subscriber
 from regex_processor import RegexProcessor
+from telnet_stripper import TelnetStripper
 from config import MUD_HOSTNAME, MUD_PORT
 
 class MUDProxy(Subscriber):
@@ -17,6 +18,7 @@ class MUDProxy(Subscriber):
 
         self.controlServerFactory = ControlServerFactory()
         self.mudClientFactory = MUDClientFactory()
+        self.telnetStripper = TelnetStripper()
         self.regexProcessor = RegexProcessor()
         
         EventBus.instance.subscribe(self)
