@@ -13,6 +13,7 @@ class EventBus(object):
 
         def publish(self, event):
             self.logger.debug("%s being published with data:\n%s" % (event.name, event.data))
+
             for subscriber in self.subscribers:
                 self.logger.debug("Asking %s to handle %s" % (subscriber.__class__.__name__, event.name))
                 subscriber.handle(event)
