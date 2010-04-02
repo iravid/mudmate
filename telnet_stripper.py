@@ -22,6 +22,8 @@ class TelnetStripper(Subscriber):
     def onRawMUDDataReceived(self, event):
         bytes = event.data
 
+        # Main state-machine loop to handle the telnet protocol stripping.
+        # Mostly shamelessly stolen from twisted.conch.telnet.Telnet#dataReceived
         for byte in bytes:
             if self.state == "data":
                 if byte == tl.IAC:
