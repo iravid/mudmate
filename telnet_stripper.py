@@ -7,28 +7,44 @@ from event_bus import EventBus
 from event import Event
 
 class TelnetStripper(Subscriber):
-    state = "data"
-
     def __init__(self):
         self.logger = logging.getLogger("mud_proxy.TelnetStripper")
+        
+        # Initialize state-machine
+        self.state = "data"
+
+        # Initialize data buffer
+        self.lines = []
+        self.currentLine = []
 
         EventBus.instance.subscribe(self)
 
     def onRawMUDDataReceived(self, event):
         bytes = event.data
-        appData = []
 
         for byte in bytes:
             if self.state == "data":
                 if byte == tl.IAC:
                     # Server wants something special. Next byte should be a command
                     self.state = "escaped"
+                elif byte == '\n':
+                    # This is one of the cases where we stop buffering and stuff the line
+                    # into self.lines.
+                    self.currentLine.append(byte)
+                    self.lines.append("".join(self.currentLine))
+                    self.currentLine = []
                 else:
-                    appData.append(byte)
+                    self.currentLine.append(byte)
             elif self.state == "escaped":
                 if byte == tl.IAC:
                     # Weird, server sent chr(255) as actual data... switch back to data state
-                    appData.append(byte)
+                    self.currentLine.append(byte)
+                    self.state = "data"
+                elif byte in (tl.NOP, tl.DM, tl.BRK, tl.IP, tl.AO, tl.AYT, tl.EC, tl.EL, tl.GA):
+                    # These commands usually mean we can safely stop buffering and stuff the current line
+                    # into self.lines
+                    self.lines.append("".join(self.currentLine))
+                    self.currentLine = []
                     self.state = "data"
                 elif byte in (tl.WILL, tl.WONT, tl.DO, tl.DONT):
                     # Next byte will be the subject of the W/D, so we switch to command state.
@@ -56,5 +72,8 @@ class TelnetStripper(Subscriber):
             else:
                 raise ValueError("How did I get here...?")
 
-        ev = Event("MUDDataReceived", "".join(appData))
-        EventBus.instance.publish(ev)
+        for line in self.lines:
+            ev = Event("MUDDataReceived", line)
+            EventBus.instance.publish(ev)
+
+        self.lines = []
