@@ -69,9 +69,9 @@ class MXPMapper(RegexProcessor):
     def activateRdescBuffering(self, firstLine):
         self.logger.info("Activating RDesc buffering")
         self.rdescBuffer = [firstLine,]
-        self.installLater.append((self.RDESC_BUFFER_REGEX, self.onRdescFallback))
+        self.installLater.append((self.RDESC_BUFFER_REGEX, self.onRdescBuffer))
 
-    def onRdescFallback(self, match):
+    def onRdescBuffer(self, match):
         self.logger.info("Buffering into RDesc: %s" % match.groupdict()["descLine"])
         self.rdescBuffer.append(match.groupdict()["descLine"])
 
@@ -82,6 +82,3 @@ class MXPMapper(RegexProcessor):
             # Cleanup
             del self.rdescBuffer
             self.removeLater.append(self.RDESC_BUFFER_REGEX)
-
-    def onFallback(self, match):
-        self.logger.info("Fallback matched: %s" % match.groups()[0])
