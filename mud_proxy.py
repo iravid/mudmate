@@ -15,7 +15,7 @@ from config import MUD_HOSTNAME, MUD_PORT
 class MUDProxy(Subscriber):
     def __init__(self):
         self.logger = logging.getLogger("mud_proxy.MUDProxy")
-        self.logger.debug("Initialising components")
+        self.logger.info("Initialising components")
 
         self.controlServerFactory = ControlServerFactory()
         self.mudClientFactory = MUDClientFactory()
@@ -38,7 +38,7 @@ class MUDProxy(Subscriber):
 def initLogging():
     logging.config.fileConfig("logging.conf")
     logger = logging.getLogger("mud_proxy")
-    logger.debug("Initialised logging")
+    logger.info("Initialised logging")
 
 if __name__ == "__main__":
     initLogging()

@@ -25,7 +25,7 @@ class MXPMapper(RegexProcessor):
         self.logger = logging.getLogger("mud_proxy.MXPMapper")
 
     def onFoundRnum(self, match):
-        self.logger.debug("Found RNum %s" % match.groupdict()["rnum"])
+        self.logger.info("Found RNum %s" % match.groupdict()["rnum"])
 
     def onFoundRname(self, match):
-        self.logger.debug("Found RName '%s'" % match.groupdict()["rname"])
+        self.logger.info("Found RName '%s'" % match.groupdict()["rname"])
