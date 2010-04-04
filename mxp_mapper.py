@@ -17,6 +17,7 @@ class MXPMapper(RegexProcessor):
     
     RDESC_BUFFER_REGEX = r"^(?P<descLine>[^<]*)(?P<closeTag></RDesc>)?"
     REXITS_BUFFER_REGEX = r"^(?P<exitsLine>.*\.)(?P<closeTag><RExits>)?"
+    REXITS_EXIT_REGEX = r'<SEND HREF="(?P<dir>[^"]*)">(?P<dirText>[^<]*)</SEND>(?: \((?P<dirHasDoor>(?:open|closed) door)\))?'
     
     rules = {
         r"<RNum (?P<rnum>\d+)>": "FoundRnum",
@@ -33,6 +34,9 @@ class MXPMapper(RegexProcessor):
         # See matchData for explanation
         self.installLater = []
         self.removeLater = []
+
+        # Compile exits regex
+        self.exitsPattern = re.compile(self.REXITS_EXIT_REGEX)
 
     def matchData(self, data):
         responses = RegexProcessor.matchData(self, data)
@@ -109,6 +113,7 @@ class MXPMapper(RegexProcessor):
         # Handle one-line exit descriptions
         if match.groupdict().get("closeTag"):
             self.logger.info("One-line RExits, stopping now")
+            self.parseExits("".join(self.rexitsBuffer))
             del self.rexitsBuffer
         else:
             self.installLater.append((self.REXITS_BUFFER_REGEX, self.onRexitsBuffer))
@@ -120,6 +125,12 @@ class MXPMapper(RegexProcessor):
         if match.groupdict().get("closeTag"):
             self.logger.info("Found RExits close, exits was:")
             self.logger.info("".join(self.rexitsBuffer))
+            self.parseExits("".join(self.rexitsBuffer))
 
             del self.rexitsBuffer
             self.removeLater.append(self.REXITS_BUFFER_REGEX)
+
+    def parseExits(self, exitsLine):
+        exits = [match.groupdict() for match in self.exitsPattern.finditer(exitsLine)]
+
+        self.logger.info("Parsed exit info: %s" % exits)
