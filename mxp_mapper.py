@@ -79,6 +79,10 @@ class MXPMapper(RegexProcessor):
             self.logger.info("Found RDesc close, desc was:")
             self.logger.info("".join(self.rdescBuffer))
 
+            # Check for errors: MXP tags showing up in the desc is definitely not right
+            if re.search("<.*>", "".join(self.rdescBuffer)):
+                self.logger.error("Ugh, MXP tags showed up in the RDesc text")
+
             # Cleanup
             del self.rdescBuffer
             self.removeLater.append(self.RDESC_BUFFER_REGEX)
