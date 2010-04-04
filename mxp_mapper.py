@@ -2,8 +2,9 @@ import logging
 
 from subscriber import Subscriber
 from event_bus import EventBus
+from regex_processor import RegexProcessor
 
-class MXPMapper(RegexProcessor, Subscriber):
+class MXPMapper(RegexProcessor):
     """
     An MXP-parsing mapper.
 
@@ -14,8 +15,8 @@ class MXPMapper(RegexProcessor, Subscriber):
     """
     
     rules = {
-        r"<RNum (?P<rnum>\d+)>": "foundRnum",
-        r"<RName>(?P<rname>.*)</RName>": "foundRname"
+        r"<RNum (?P<rnum>\d+)>": "FoundRnum",
+        r"<RName>(?P<rname>.*)</RName>": "FoundRname"
     }
 
     def __init__(self):
@@ -23,8 +24,8 @@ class MXPMapper(RegexProcessor, Subscriber):
 
         self.logger = logging.getLogger("mud_proxy.MXPMapper")
 
-    def foundRnum(self, match):
+    def onFoundRnum(self, match):
         self.logger.debug("Found RNum %s" % match.groupdict()["rnum"])
 
-    def foundRname(self, match):
+    def onFoundRname(self, match):
         self.logger.debug("Found RName '%s'" % match.groupdict()["rname"])
