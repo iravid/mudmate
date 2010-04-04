@@ -7,6 +7,11 @@ from event_bus import EventBus
 from event import Event
 
 class TelnetStripper(Subscriber):
+    """
+    This class strips telnet and ANSI command codes off of incoming RawMUDDataReceived
+    events, and sends out clean MUDDataReceived events.
+    """
+
     def __init__(self):
         self.logger = logging.getLogger("mud_proxy.TelnetStripper")
         
@@ -16,6 +21,14 @@ class TelnetStripper(Subscriber):
         # Initialize data buffer
         self.lines = []
         self.currentLine = []
+
+        # Compile ANSI regex
+        self.ansiRegex = re.compile(r"""
+        \x1b     # literal ESC
+        \[       # literal [
+        [;\d]*   # zero or more digits or semicolons
+        [A-Za-z] # a letter
+        """, re.VERBOSE)
 
         EventBus.instance.subscribe(self)
 
@@ -75,7 +88,10 @@ class TelnetStripper(Subscriber):
                 raise ValueError("How did I get here...?")
 
         for line in self.lines:
-            ev = Event("MUDDataReceived", line)
+            # Strip ANSI codes
+            strippedLine = self.ansiRegex.sub("", line)
+
+            ev = Event("MUDDataReceived", strippedLine)
             EventBus.instance.publish(ev)
 
         self.lines = []
