@@ -1,4 +1,4 @@
-import logging
+import logging, logging.config
 import sys
 
 from twisted.internet import reactor
@@ -36,14 +36,8 @@ class MUDProxy(Subscriber):
         reactor.stop()
 
 def initLogging():
+    logging.config.fileConfig("logging.conf")
     logger = logging.getLogger("mud_proxy")
-    handler = logging.StreamHandler(sys.stdout)
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG)
-
     logger.debug("Initialised logging")
 
 if __name__ == "__main__":
