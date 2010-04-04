@@ -7,7 +7,6 @@ from event_bus import EventBus
 
 class RegexProcessor(Subscriber):
     rules = {
-        r"Enter an option or your character\'s name\.": "Username"
     }
 
     def __init__(self):
@@ -39,8 +38,3 @@ class RegexProcessor(Subscriber):
                     responses.append(response)
 
         return responses
-
-    def onUsername(self, match):
-        self.logger.debug("Matched! Sending Riaan")
-
-        return "Riaan\r\n"
