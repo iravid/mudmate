@@ -1,4 +1,5 @@
 import logging
+import re
 
 import twisted.conch.telnet as tl
 
