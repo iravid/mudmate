@@ -16,14 +16,14 @@ class MXPMapper(RegexProcessor):
     """
     
     RDESC_BUFFER_REGEX = r"^(?P<descLine>[^<]*)(?P<closeTag></RDesc>)?"
-    REXITS_BUFFER_REGEX = r"^(?P<exitsLine>.*\.)(?P<closeTag><RExits>)?"
+    REXITS_BUFFER_REGEX = r"^(?P<exitsLine>.*\.)(?P<closeTag></*RExits>)?"
     REXITS_EXIT_REGEX = r'<SEND HREF="(?P<dir>[^"]*)">(?P<dirText>[^<]*)</SEND>(?: \((?P<dirHasDoor>(?:open|closed) door)\))?'
     
     rules = {
         r"<RNum (?P<rnum>\d+)>": "FoundRnum",
         r"<RName>(?P<rname>.*)</RName>": "FoundRname",
         r"<RDesc>(?P<descLine>[^<]*)(?P<closeTag></RDesc>)?": "FoundRdescOpen",
-        r"^(.*</RDesc>\s*)?<RExits>(?P<exitsLine>.*\.)(?P<closeTag><RExits>)?": "FoundRexitsOpen",
+        r"^(.*</RDesc>\s*)?<RExits>(?P<exitsLine>.*\.)(?P<closeTag></*RExits>)?": "FoundRexitsOpen",
     }
 
     def __init__(self):
