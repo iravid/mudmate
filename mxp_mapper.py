@@ -1,4 +1,5 @@
 import logging
+import re
 
 from subscriber import Subscriber
 from event_bus import EventBus
@@ -19,7 +20,7 @@ class MXPMapper(RegexProcessor):
     rules = {
         r"<RNum (?P<rnum>\d+)>": "FoundRnum",
         r"<RName>(?P<rname>.*)</RName>": "FoundRname",
-        r"<RDesc>(?P<descLine>[^<]*)": "FoundRdescOpen",
+        r"<RDesc>(?P<descLine>[^<]*)(?P<closeTag></RDesc>)?": "FoundRdescOpen",
     }
 
     def __init__(self):
@@ -64,12 +65,19 @@ class MXPMapper(RegexProcessor):
 
     def onFoundRdescOpen(self, match):
         self.logger.info("Found RDesc opening tag, first line is: %s" % match.groupdict()["descLine"])
-        self.activateRdescBuffering(match.groupdict()["descLine"])
+        self.activateRdescBuffering(match)
 
-    def activateRdescBuffering(self, firstLine):
+    def activateRdescBuffering(self, match):
         self.logger.info("Activating RDesc buffering")
-        self.rdescBuffer = [firstLine,]
-        self.installLater.append((self.RDESC_BUFFER_REGEX, self.onRdescBuffer))
+        self.rdescBuffer = [match.groupdict()["descLine"],]
+
+        # Handle one-line descriptions: don't add the RDESC_BUFFER_REGEX in case this is one
+        # of those.
+        if match.groupdict().get("closeTag"):
+            self.logger.info("One-line RDesc, stopping now")
+            del self.rdescBuffer
+        else:
+            self.installLater.append((self.RDESC_BUFFER_REGEX, self.onRdescBuffer))
 
     def onRdescBuffer(self, match):
         self.logger.info("Buffering into RDesc: %s" % match.groupdict()["descLine"])
