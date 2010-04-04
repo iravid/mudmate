@@ -16,11 +16,13 @@ class MXPMapper(RegexProcessor):
     """
     
     RDESC_BUFFER_REGEX = r"^(?P<descLine>[^<]*)(?P<closeTag></RDesc>)?"
+    REXITS_BUFFER_REGEX = r"^(?P<exitsLine>.*\.)(?P<closeTag><RExits>)?"
     
     rules = {
         r"<RNum (?P<rnum>\d+)>": "FoundRnum",
         r"<RName>(?P<rname>.*)</RName>": "FoundRname",
         r"<RDesc>(?P<descLine>[^<]*)(?P<closeTag></RDesc>)?": "FoundRdescOpen",
+        r"^(.*</RDesc>\s*)?<RExits>(?P<exitsLine>.*\.)(?P<closeTag><RExits>)?": "FoundRexitsOpen",
     }
 
     def __init__(self):
@@ -94,3 +96,30 @@ class MXPMapper(RegexProcessor):
             # Cleanup
             del self.rdescBuffer
             self.removeLater.append(self.RDESC_BUFFER_REGEX)
+
+    # TODO: refactor all this and the RDesc buffering to derive from a common something
+    def onFoundRexitsOpen(self, match):
+        self.logger.info("Found RExits opening tag, first line is: %s" % match.groupdict()["exitsLine"])
+        self.activateRexitsBuffering(match)
+
+    def activateRexitsBuffering(self, match):
+        self.logger.info("Activating RExits buffering")
+        self.rexitsBuffer = [match.groupdict()["exitsLine"],]
+
+        # Handle one-line exit descriptions
+        if match.groupdict().get("closeTag"):
+            self.logger.info("One-line RExits, stopping now")
+            del self.rexitsBuffer
+        else:
+            self.installLater.append((self.REXITS_BUFFER_REGEX, self.onRexitsBuffer))
+
+    def onRexitsBuffer(self, match):
+        self.logger.info("Buffering into RExits: %s" % match.groupdict()["exitsLine"])
+        self.rexitsBuffer.append(match.groupdict()["exitsLine"])
+
+        if match.groupdict().get("closeTag"):
+            self.logger.info("Found RExits close, exits was:")
+            self.logger.info("".join(self.rexitsBuffer))
+
+            del self.rexitsBuffer
+            self.removeLater.append(self.REXITS_BUFFER_REGEX)
