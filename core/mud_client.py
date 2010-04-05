@@ -1,8 +1,8 @@
 from twisted.internet.protocol import Protocol, ClientFactory
 
-from event_bus import EventBus
-from event import Event
-from subscriber import Subscriber
+from events.event_bus import EventBus
+from events.event import Event
+from events.subscriber import Subscriber
 
 class MUDClient(Protocol):
     def dataReceived(self, data):

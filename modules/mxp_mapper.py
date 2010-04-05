@@ -1,8 +1,8 @@
 import logging
 import re
 
-from subscriber import Subscriber
-from event_bus import EventBus
+from events.subscriber import Subscriber
+from events.event_bus import EventBus
 from regex_processor import RegexProcessor
 
 class MXPMapper(RegexProcessor):

@@ -3,9 +3,9 @@ import re
 
 import twisted.conch.telnet as tl
 
-from subscriber import Subscriber
-from event_bus import EventBus
-from event import Event
+from events.subscriber import Subscriber
+from events.event_bus import EventBus
+from events.event import Event
 
 class TelnetStripper(Subscriber):
     """
