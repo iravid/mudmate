@@ -3,14 +3,14 @@ import sys
 
 from twisted.internet import reactor
 
-from control_server import ControlServerFactory
-from mud_client import MUDClientFactory
-from event_bus import EventBus
-from subscriber import Subscriber
-from regex_processor import RegexProcessor
-from telnet_stripper import TelnetStripper
-from mxp_mapper import MXPMapper
-from config import MUD_HOSTNAME, MUD_PORT
+from core.control_server import ControlServerFactory
+from core.mud_client import MUDClientFactory
+from events.event_bus import EventBus
+from events.subscriber import Subscriber
+from modules.regex_processor import RegexProcessor
+from modules.telnet_stripper import TelnetStripper
+from modules.mxp_mapper import MXPMapper
+from config.config import MUD_HOSTNAME, MUD_PORT
 
 class MUDProxy(Subscriber):
     def __init__(self):
@@ -36,7 +36,7 @@ class MUDProxy(Subscriber):
         reactor.stop()
 
 def initLogging():
-    logging.config.fileConfig("logging.conf")
+    logging.config.fileConfig("config/logging.conf")
     logger = logging.getLogger("mud_proxy")
     logger.info("Initialised logging")
 

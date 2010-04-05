@@ -1,9 +1,9 @@
 import logging
 import re
 
-from subscriber import Subscriber
-from event import Event
-from event_bus import EventBus
+from events.subscriber import Subscriber
+from events.event import Event
+from events.event_bus import EventBus
 
 class RegexProcessor(Subscriber):
     rules = {
