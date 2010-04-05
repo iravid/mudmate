@@ -3,11 +3,11 @@ import re
 
 from events.subscriber import Subscriber
 from events.event_bus import EventBus
-from regex_processor import RegexProcessor
+from modules.regex_processor import RegexProcessor
 
-class MXPMapper(RegexProcessor):
+class MXPParser(RegexProcessor):
     """
-    An MXP-parsing mapper.
+    An MXP parser.
 
     This class works vaguely like a SAX XML parser, IIRC. 
 
