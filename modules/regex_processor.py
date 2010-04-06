@@ -33,7 +33,6 @@ class RegexProcessor(Subscriber):
         responses = []
 
         for pattern, handler in self.rules.items():
-            self.logger.debug("Trying to match %s against %s" % (data, pattern))
             match = re.search(pattern, data, re.MULTILINE)
 
             if match:
