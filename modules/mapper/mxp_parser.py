@@ -29,39 +29,10 @@ class MXPParser(RegexProcessor):
     def __init__(self):
         RegexProcessor.__init__(self)
 
-        self.logger = logging.getLogger("mud_proxy.MXPMapper")
-        
-        # See matchData for explanation
-        self.installLater = []
-        self.removeLater = []
+        self.logger = logging.getLogger("mud_proxy.MXPParser")
 
         # Compile exits regex
         self.exitsPattern = re.compile(self.REXITS_EXIT_REGEX)
-
-    def matchData(self, data):
-        responses = RegexProcessor.matchData(self, data)
-
-        # Since we don't want the rules list to mutate during a parsing pass, we schedule
-        # the addition of new rules in self.installLater and install them after we finish parsing.
-        # The RDesc and RExits bufferings use this.
-        for regex, handler in self.installLater:
-            if self.rules.get(regex):
-                self.logger.warning("Yikes! The regex I'm installing already exists...")
-
-            self.rules[regex] = handler
-
-        self.installLater = []
-
-        # Same idea, but for removing rules:
-        for regex in self.removeLater:
-            if not self.rules.get(regex):
-                self.logger.warning("Yikes! The regex I'm removing doesn't exist...")
-
-            self.rules.pop(regex, None)
-
-        self.removeLater = []
-
-        return responses
 
     def onFoundRnum(self, match):
         self.logger.info("Found RNum %s" % match.groupdict()["rnum"])
@@ -83,7 +54,7 @@ class MXPParser(RegexProcessor):
             self.logger.info("One-line RDesc, stopping now")
             del self.rdescBuffer
         else:
-            self.installLater.append((self.RDESC_BUFFER_REGEX, self.onRdescBuffer))
+            self.addRule(self.RDESC_BUFFER_REGEX, self.onRdescBuffer)
 
     def onRdescBuffer(self, match):
         self.logger.info("Buffering into RDesc: %s" % match.groupdict()["descLine"])
@@ -99,7 +70,7 @@ class MXPParser(RegexProcessor):
 
             # Cleanup
             del self.rdescBuffer
-            self.removeLater.append(self.RDESC_BUFFER_REGEX)
+            self.removeRule(self.RDESC_BUFFER_REGEX)
 
     # TODO: refactor all this and the RDesc buffering to derive from a common something
     def onFoundRexitsOpen(self, match):
@@ -116,7 +87,7 @@ class MXPParser(RegexProcessor):
             self.parseExits("".join(self.rexitsBuffer))
             del self.rexitsBuffer
         else:
-            self.installLater.append((self.REXITS_BUFFER_REGEX, self.onRexitsBuffer))
+            self.addRule(self.REXITS_BUFFER_REGEX, self.onRexitsBuffer)
 
     def onRexitsBuffer(self, match):
         self.logger.info("Buffering into RExits: %s" % match.groupdict()["exitsLine"])
@@ -128,7 +99,7 @@ class MXPParser(RegexProcessor):
             self.parseExits("".join(self.rexitsBuffer))
 
             del self.rexitsBuffer
-            self.removeLater.append(self.REXITS_BUFFER_REGEX)
+            self.removeRule(self.REXITS_BUFFER_REGEX)
 
     def parseExits(self, exitsLine):
         exits = [match.groupdict() for match in self.exitsPattern.finditer(exitsLine)]
