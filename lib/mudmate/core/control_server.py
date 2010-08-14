@@ -47,3 +47,6 @@ class ControlServerFactory(Factory, Subscriber):
 
     def onRawMUDDataReceived(self, event):
         self.mainConnection.transport.write(event.data)
+
+    def onTelnetDataReceived(self, event):
+        self.mainConnection.transport.write(event.data)

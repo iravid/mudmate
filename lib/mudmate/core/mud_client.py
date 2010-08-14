@@ -25,7 +25,7 @@ class MUDClient(Telnet):
         if argument in self.swallowedCommands:
             Telnet.commandReceived(self, command, argument)
         else:
-            self.factory._dataReceived(IAC + command + (argument or ""))
+            self.factory._telnetDataReceived(IAC + command + (argument or ""))
 
     def unhandledCommand(self, command, argument):
         self.logger.warning("Ouch! This shouldn't happen! (%s, %s)" % (ord(command), ord(argument or chr(0))))
@@ -35,7 +35,7 @@ class MUDClient(Telnet):
         if command in self.swallowedCommands:
             Telnet.negotiate(self, bytes)
         else:
-            self.factory._dataReceived(IAC + SB + bytes + IAC + SE)
+            self.factory._telnetDataReceived(IAC + SB + bytes + IAC + SE)
 
     def handleAtcp(self, bytes):
         self.factory._atcpReceived(bytes)
@@ -67,6 +67,10 @@ class MUDClientFactory(ClientFactory, Subscriber):
 
     def _dataReceived(self, data):
         ev = Event("RawMUDDataReceived", data)
+        EventBus.instance.publish(ev)
+
+    def _telnetDataReceived(self, data):
+        ev = Event("TelnetDataReceived", data)
         EventBus.instance.publish(ev)
 
     def _atcpReceived(self, data):

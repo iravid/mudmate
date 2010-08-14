@@ -9,8 +9,8 @@ from events.event import Event
 
 class TelnetStripper(Subscriber):
     """
-    This class strips telnet and ANSI command codes off of incoming RawMUDDataReceived
-    events, and sends out clean MUDDataReceived events.
+    This class buffers incoming application data into lines, strips off ANSI command
+    codes and sends off MUDDataReceived events.
     """
 
     def __init__(self):
